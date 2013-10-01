@@ -106,6 +106,10 @@ def Sonde(data_file, file_format=None, *args, **kwargs):
     if 'ysi' in file_format.lower():
         from sonde.formats.ysi import YSIDataset
         return YSIDataset(data_file, *args, **kwargs)
+    
+    if file_format.lower() == 'aquatroll':
+        from sonde.formats.aquatroll import AquatrollDataset
+        return AquatrollDataset(data_file, *args, **kwargs)
 
     if file_format.lower() == 'hydrolab':
         from sonde.formats.hydrolab import HydrolabDataset
@@ -193,6 +197,8 @@ def autodetect(data_file, filename=None):
 
     if lines[0].lower().find('greenspan') != -1:
         return 'greenspan'
+    if lines[0].lower().find('aqua troll') != -1 or lines[10].lower().find('aqua troll') != -1:
+        return 'aquatroll'
     if lines[0].lower().find('macroctd') != -1:
         return 'macroctd'
     if lines[0].lower().find('minisonde4a') != -1:

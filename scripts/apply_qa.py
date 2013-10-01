@@ -81,7 +81,8 @@ log_file_dir = 'deployment_logs'
 log_file_name = 'master_deployment_log_pipe_del.csv'
 log_file = os.path.join(base_dir, log_file_dir, log_file_name)
 
-metadata_file = os.path.join(base_dir,'swis_site_list_with_nueces_added.psv')
+metadata_file = os.path.join(base_dir,'swis_site_list.psv')
+# metadata_file = os.path.join(base_dir,'swis_site_list_with_nueces_added.psv')
 
 disclaimer = ''
 disclaimer += 'This data has been collected by a Texas Water Development Board datasonde.\n'
@@ -96,6 +97,7 @@ disclaimer += 'or its fitness for any specific application. \n'
 
 #choose site and setup remaining variables
 site_name = raw_input('Enter Site Name: ').lower()
+# base_dir1 = '/home/ashi/twdbproj/reader_test'
 site_dir = os.path.join(base_dir, 'sites', site_name)
 original_data_files_dir = os.path.join(site_dir, 'original_data_files')
 
