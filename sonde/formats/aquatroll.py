@@ -31,8 +31,8 @@ from sonde import util
 # from sonde import quantities as sq
 import quantities as pq
 
-class BadDatafileError(IOError):
-    pass
+# class BadDatafileError(IOError):
+#     pass
 
 
 class AquatrollDataset(sonde.BaseSondeDataset):
@@ -48,7 +48,6 @@ class AquatrollDataset(sonde.BaseSondeDataset):
         self.file_format = 'aquatroll'
         self.manufacturer = 'aquatroll'
         self.data_file = data_file
-        self.format_version = format_version
         self.default_tzinfo = tzinfo
         self.data = {}
         self.dates = []
@@ -85,10 +84,10 @@ class AquatrollDataset(sonde.BaseSondeDataset):
                     'volts': pq.volt,
                     'Volts': pq.volt,
                     'volt': pq.volt,
-                    'xb5S': sq.uS,
+                    'xb5S': sq.uScm,
                     'p':sq.mgl, # dbl check.. 
                     '': pq.dimensionless,
-#                     'ohm-cm':
+#                     'ohm-cm':      #adding to master param list
 #                     'kg/m3' //water density
 #                    water resistivity
                 
@@ -98,7 +97,7 @@ class AquatrollDataset(sonde.BaseSondeDataset):
 
         # determine parameters provided and in what units
         self.parameters = {}
-        self.data = {}
+#         self.data = {}
         for parameter in aquatroll_data.parameters:
             try:
                 pcode = param_map[(parameter.name).strip()]
@@ -146,26 +145,29 @@ class AquatrollReader:
         self.header_lines = []
         self.num_params = 0
         self.parameters = []
+        self.data = {}
+        self.dates = []
         self.site_name =''
         if type(data_file) == str:
             self.file_name = data_file
         elif type(data_file) == file:
             self.file_name = data_file.name
         self.file_ext = self.file_name.split('.')[-1].lower()
-        self.data = {}
+        
         
         temp_file_path = None
-        if self.file_ext == 'xlsx':
+#         if self.file_ext == 'xlsx':
             #handling xlsx file
-            pass
+#             pass
 #             temp_file_path, self.xlrd_datemode = util.xls_to_csv(
 #                 self.file_name)
 #             file_buf = open(temp_file_path, 'rb')
-        else:
-            if type(data_file) == str:
-                file_buf = open(data_file)
-            elif type(data_file) == file:
-                file_buf = data_file
+#         else:
+        
+#         if type(data_file) == str:
+        file_buf = open(data_file)
+#         elif type(data_file) == file:
+#             file_buf = data_file
 
         try:
             self.read_aquatroll(file_buf)
@@ -209,30 +211,19 @@ class AquatrollReader:
         """
         fid.seek(0)
         buf = fid.readline()
-        while buf:
-            if buf[0:21] == 'Date and Time,Seconds':
-#                 params = buf.split(',')
-                break
-
-            self.header_lines.append(buf)
-
-            if 'Site Name' in buf:
-                self.site_name = buf.split(',')[1].strip()
-            if 'Serial Number' in buf:
-                self.serial_number = buf.split(',')[1].strip()
-            if 'Start Time' in buf:
-                d, t = buf.strip().split()[2:4]
-                self.setup_time = datetime.datetime.strptime(
-                    d[5:] + t, '%m/%d/%Y%H:%M:%S')
-            if 'Stop Time' in buf:
-                d, t = buf.strip().split()[2:4]
-                if d[-4:].isdigit():
-                    self.stop_time = datetime.datetime.strptime(
-                    d[5:] + t, '%m/%d/%Y%H:%M:%S')
-                else:
-                    self.stop_time = buf.strip().split(',')[2]   
-            buf = file_buf.readline()
-#         fields = buf.strip().split(',')[2:]
+#         while buf:
+#             if buf[0:21] == 'Date and Time,Seconds':
+#                 fields = buf.strip('\r\n').split(',')
+#                 params = [p.strip(' ') for p in fields[2:]]
+#                 units = []
+#                 for u in params:
+#                     if u[-1:] == ')':
+#                         units.append(u[u.find('(')+1:u.find(')')])
+#                     else: 
+#                         units.append(u[u.find('(')+1:])
+#                 break
+        while buf[0:21] != 'Date and Time,Seconds':
+            buf = fid.readline()
         fields = buf.strip('\r\n').split(',')
         params = [p.strip(' ') for p in fields[2:]]
         units = []
@@ -244,21 +235,23 @@ class AquatrollReader:
 
         date = []
         time = []
-        data = np.genfromtxt(file_buf, delimiter=',', dtype=None, names=fields)
+        data = np.genfromtxt(fid, delimiter=',', dtype=None, names=fields)
         for dt in data['Date_and_Time']:
             date.append(dt.split(' ')[0])
             time.append(dt.split(' ')[1])
-     
-        dates = np.array(
+      
+        self.dates = np.array(
                     [datetime.datetime.strptime(d+t, '%m/%d/%Y%H:%M:%S')
                      for d, t in zip(date, time)]
                     )
         for param, unit in zip(params, units):
             self.parameters.append(Parameter(param.strip(), unit.strip()))
             
-        for ii in range(len(self.parameters)):
-                param = (self.parameters[ii].name).strip(' .').replace(' ', '_')
-                self.parameters[ii].data = data[param]    
+#         for ii in range(len(self.parameters)):
+#                 param = (self.parameters[ii].name).strip(' .').replace(' ', '_')
+#                 self.parameters[ii].data = data[param]    
+        for ii in range(self.num_params):
+                self.parameters[ii].data = data[:, ii]
 
 class Parameter:
     """

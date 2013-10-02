@@ -93,7 +93,7 @@ def Sonde(data_file, file_format=None, *args, **kwargs):
       - `macroctd` : a Macroctd csv file
       - `hydrotech` : a Hydrotech csv file
       - `solinst` : a solinst lev file
-
+      - 'aquatroll': a aqua troll csv or xlsx file
     """
 
     if not file_format:
@@ -179,7 +179,7 @@ def autodetect(data_file, filename=None):
     if file_ext and file_ext == 'xls':
         temp_csv_path, xls_read_mode = util.xls_to_csv(data_file)
         fid = open(temp_csv_path, 'rb')
-        lines = [fid.readline() for i in range(3)]
+        lines = [fid.readline() for i in range(11)]
         fid.close()
         os.remove(temp_csv_path)
 
@@ -191,14 +191,13 @@ def autodetect(data_file, filename=None):
 
         file_initial_location = fid.tell()
         fid.seek(0)
-        lines = [fid.readline() for i in range(3)]
+        lines = [fid.readline() for i in range(11)]
         fid.seek(file_initial_location)
 
 
     if lines[0].lower().find('greenspan') != -1:
         return 'greenspan'
-    if lines[0].lower().find('aqua troll') != -1 or lines[10].lower().find('aqua troll') != -1:
-        return 'aquatroll'
+    
     if lines[0].lower().find('macroctd') != -1:
         return 'macroctd'
     if lines[0].lower().find('minisonde4a') != -1:
@@ -216,6 +215,8 @@ def autodetect(data_file, filename=None):
         return 'hydrotech'
     if lines[0].lower().find('the following data have been') != -1:
         return 'lcra'
+    if lines[0].lower().find('aqua troll') != -1 or lines[10].lower().find('aqua troll') != -1:
+        return 'aquatroll'
 
     # ascii files for ysi in brazos riv.
     if lines[0].find('espey') != -1:
@@ -368,7 +369,7 @@ class BaseSondeDataset(object):
         #if 'site_name' in self.format_parameters.keys():
         #    site_name = self.format_parameters['site_name']
         #    @todo tz check
-
+        
         if default_static_timezone and self.dates[0].tzinfo != None:
             self.convert_timezones(default_static_timezone)
 

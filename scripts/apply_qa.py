@@ -100,17 +100,17 @@ site_name = raw_input('Enter Site Name: ').lower()
 # base_dir1 = '/home/ashi/twdbproj/reader_test'
 site_dir = os.path.join(base_dir, 'sites', site_name)
 original_data_files_dir = os.path.join(site_dir, 'original_data_files')
-
+ 
 qa_rules_file = os.path.join(site_dir, 'twdb_wq_' + site_name +'_qa_rules.csv')
 raw_data_file = os.path.join(site_dir,'twdb_wq_'+site_name+'_raw.csv')
 clean_data_file = os.path.join(site_dir,'twdb_wq_'+site_name+'.csv')
 image_file = os.path.join(site_dir,'twdb_wq_'+site_name+'.png')
 image_file_wclipped = os.path.join(site_dir,'twdb_wq_'+site_name+'_withclipped.png')
-
+ 
 if not os.path.isdir(site_dir):
     print 'No directory found for: ', site_dir
     raise
-
+ 
 if not os.path.isdir(original_data_files_dir):
     print 'No directory found for: ', original_data_files_dir
     raise
