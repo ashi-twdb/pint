@@ -156,18 +156,16 @@ class AquatrollReader:
         
         
         temp_file_path = None
-#         if self.file_ext == 'xlsx':
+        if self.file_ext == 'xlsx':
             #handling xlsx file
-#             pass
-#             temp_file_path, self.xlrd_datemode = util.xls_to_csv(
-#                 self.file_name)
-#             file_buf = open(temp_file_path, 'rb')
-#         else:
-        
-#         if type(data_file) == str:
-        file_buf = open(data_file)
-#         elif type(data_file) == file:
-#             file_buf = data_file
+            temp_file_path, self.xlrd_datemode = util.xls_to_csv(
+                self.file_name)
+            file_buf = open(temp_file_path, 'rb')
+        else:
+            if type(data_file) == str:
+                file_buf = open(data_file)
+            elif type(data_file) == file:
+                file_buf = data_file
 
         try:
             self.read_aquatroll(file_buf)
