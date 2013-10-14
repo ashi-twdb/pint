@@ -179,7 +179,7 @@ def autodetect(data_file, filename=None):
     if file_ext and file_ext == 'xls':
         temp_csv_path, xls_read_mode = util.xls_to_csv(data_file)
         fid = open(temp_csv_path, 'rb')
-        lines = [fid.readline() for i in range(11)]
+        lines = [fid.readline() for i in range(3)]
         fid.close()
         os.remove(temp_csv_path)
 
@@ -191,7 +191,7 @@ def autodetect(data_file, filename=None):
 
         file_initial_location = fid.tell()
         fid.seek(0)
-        lines = [fid.readline() for i in range(11)]
+        lines = [fid.readline() for i in range(3)]
         fid.seek(file_initial_location)
 
 
@@ -215,7 +215,7 @@ def autodetect(data_file, filename=None):
         return 'hydrotech'
     if lines[0].lower().find('the following data have been') != -1:
         return 'lcra'
-    if lines[0].lower().find('aqua troll') != -1 or lines[10].lower().find('aqua troll') != -1:
+    if lines[0].lower().find('aqua troll') != -1 or lines[2].lower().find('report computer name:') != -1:
         return 'aquatroll'
 
     # ascii files for ysi in brazos riv.

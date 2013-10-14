@@ -14,7 +14,6 @@ sonde/timezones.py
 sonde/util.py
 sonde/data/__init__.py
 sonde/formats/__init__.py
-sonde/formats/aquatest.py
 sonde/formats/aquatroll.py
 sonde/formats/espey.py
 sonde/formats/eureka.py

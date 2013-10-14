@@ -25,10 +25,8 @@ from .. import sonde
 from .. import quantities as sq
 
 from ..timezones import cdt, cst
-# from .. 
 
 from sonde import util
-# from sonde import quantities as sq
 import quantities as pq
 
 # class BadDatafileError(IOError):
@@ -145,8 +143,8 @@ class AquatrollReader:
         self.header_lines = []
         self.num_params = 0
         self.parameters = []
-        self.data = {}
-        self.dates = []
+#         self.data = {}
+#         self.dates = []
         self.site_name =''
         if type(data_file) == str:
             self.file_name = data_file
@@ -209,32 +207,41 @@ class AquatrollReader:
         """
         fid.seek(0)
         buf = fid.readline()
-#         while buf:
-#             if buf[0:21] == 'Date and Time,Seconds':
-#                 fields = buf.strip('\r\n').split(',')
-#                 params = [p.strip(' ') for p in fields[2:]]
-#                 units = []
-#                 for u in params:
-#                     if u[-1:] == ')':
-#                         units.append(u[u.find('(')+1:u.find(')')])
-#                     else: 
-#                         units.append(u[u.find('(')+1:])
-#                 break
-        while buf[0:21] != 'Date and Time,Seconds':
+        while buf:
+            if buf[0:21] == 'Date and Time,Seconds':
+                break
+            
             buf = fid.readline()
-        fields = buf.strip('\r\n').split(',')
-        params = [p.strip(' ') for p in fields[2:]]
+            
+        all_fields = buf.strip('\r\n').split(',')
+        fields = []
+        for i in all_fields:
+            fields.append(' '.join(i.split()[:-1]))
+#         params = [p.strip(' ') for p in fields[2:]]
+        params = fields[2:]
         units = []
         for u in params:
             if u[-1:] == ')':
                 units.append(u[u.find('(')+1:u.find(')')])
             else: 
                 units.append(u[u.find('(')+1:])
+#             break
+            
+#         while buf[0:21] != 'Date and Time,Seconds':
+#             buf = fid.readline()
+#         fields = buf.strip('\r\n').split(',')
+#         params = [p.strip(' ') for p in fields[2:]]
+#         units = []
+#         for u in params:
+#             if u[-1:] == ')':
+#                 units.append(u[u.find('(')+1:u.find(')')])
+#             else: 
+#                 units.append(u[u.find('(')+1:])
 
         date = []
         time = []
         data = np.genfromtxt(fid, delimiter=',', dtype=None, names=fields)
-        for dt in data['Date_and_Time']:
+        for dt in data['Date_and']:
             date.append(dt.split(' ')[0])
             time.append(dt.split(' ')[1])
       
@@ -242,14 +249,19 @@ class AquatrollReader:
                     [datetime.datetime.strptime(d+t, '%m/%d/%Y%H:%M:%S')
                      for d, t in zip(date, time)]
                     )
-        for param, unit in zip(params, units):
+        
+        for param, unit in zip(params[:-1], units[:-1]):
+            self.num_params += 1 
             self.parameters.append(Parameter(param.strip(), unit.strip()))
             
 #         for ii in range(len(self.parameters)):
 #                 param = (self.parameters[ii].name).strip(' .').replace(' ', '_')
 #                 self.parameters[ii].data = data[param]    
+        
         for ii in range(self.num_params):
-                self.parameters[ii].data = data[:, ii]
+            param = (self.parameters[ii].name).strip(' .').replace(' ', '_')
+            self.parameters[ii].data = data[param]
+
 
 class Parameter:
     """
