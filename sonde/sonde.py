@@ -198,6 +198,9 @@ def autodetect(data_file, filename=None):
     if lines[0].lower().find('greenspan') != -1:
         return 'greenspan'
     
+    if lines[0].lower().find('eureka') != -1:
+        return 'eureka'
+    
     if lines[0].lower().find('macroctd') != -1:
         return 'macroctd'
     if lines[0].lower().find('minisonde4a') != -1:

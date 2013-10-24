@@ -156,9 +156,10 @@ class AquatrollReader:
         temp_file_path = None
         if self.file_ext == 'xlsx':
             #handling xlsx file
-            temp_file_path, self.xlrd_datemode = util.xls_to_csv(
-                self.file_name)
-            file_buf = open(temp_file_path, 'rb')
+#             temp_file_path, self.xlrd_datemode = util.xls_to_csv(
+#                 self.file_name)
+#             file_buf = open(temp_file_path, 'rb')
+            pass
         else:
             if type(data_file) == str:
                 file_buf = open(data_file)
@@ -213,10 +214,10 @@ class AquatrollReader:
             
             buf = fid.readline()
             
-        all_fields = buf.strip('\r\n').split(',')
-        fields = []
-        for i in all_fields:
-            fields.append(' '.join(i.split()[:-1]))
+        fields = buf.strip('\r\n').split(',')
+#         fields = []
+#         for i in all_fields:
+#             fields.append(' '.join(i.split()[:-1]))
 #         params = [p.strip(' ') for p in fields[2:]]
         params = fields[2:]
         units = []
@@ -241,7 +242,7 @@ class AquatrollReader:
         date = []
         time = []
         data = np.genfromtxt(fid, delimiter=',', dtype=None, names=fields)
-        for dt in data['Date_and']:
+        for dt in data['Date_and_Time']:
             date.append(dt.split(' ')[0])
             time.append(dt.split(' ')[1])
       
@@ -259,7 +260,8 @@ class AquatrollReader:
 #                 self.parameters[ii].data = data[param]    
         
         for ii in range(self.num_params):
-            param = (self.parameters[ii].name).strip(' .').replace(' ', '_')
+#             param = (self.parameters[ii].name).strip(' .').replace(' ', '_')
+            param = (self.parameters[ii].name).strip().replace(' ', '_').replace('(', '').replace(')', '').replace('/', '').replace('-','')
             self.parameters[ii].data = data[param]
 
 
