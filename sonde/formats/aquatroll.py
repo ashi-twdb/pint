@@ -22,7 +22,7 @@ import xlrd
 import numpy as np
 
 from .. import sonde
-from .. import quantities as sq
+from sonde import quantities as sq
 
 from ..timezones import cdt, cst
 
@@ -55,17 +55,36 @@ class AquatrollDataset(sonde.BaseSondeDataset):
         """
         Read the Aquatroll data file
         """
+#         param_map = {'Temperature': 'water_temperature',
+#                      'Temperature_C': 'water_temperature',
+#                      'Specific Conductivity': 'water_specific_conductance', 
+#                      'Salinity': 'seawater_salinity',
+#                      'Water Density': 'water_density',
+#                      'Resistivity': 'water_resistivity',
+#                      'Total Dissolved Solids': 'water_total_dissolved_salts',
+#                      'Actual Conductivity': 'water_electrical_conductivity',
+#                      
+#                      }
+        
         param_map = {'Temperature': 'water_temperature',
-                     'Specific Conductivity': 'water_specific_conductance', 
-                     'Salinity': 'seawater_salinity',
-                     'Water Density': 'water_density',
-                     'Resistivity': 'water_resistivity',
-                     'Total Dissolved Solids': 'water_total_dissolved_salts',
-                     'Actual Conductivity': 'water_electrical_conductivity',
-                     
-                     }
+             'Temperature (C)': 'water_temperature',
+             'Specific Conductivity (\xb5S': 'water_specific_conductance', 
+             'Salinity (PSU)': 'seawater_salinity',
+             'Water Density (g/cm3)': 'water_density',
+             'Resistivity (ohm-cm)': 'water_resistivity',
+             'Total Dissolved Solids (p': 'water_total_dissolved_salts',
+             'Actual Conductivity (\xb5S)': 'water_electrical_conductivity',
+             }
 
-        unit_map = {'deg_C': pq.degC,
+        unit_map = {'C)': pq.degC,
+                    
+                    '\xb5S)': sq.mScm,
+                    '\xb5S': sq.mScm,
+                    'PSU)': sq.psu,
+                    'p': sq.mgl, # dbl check.. 
+                    'ohm-cm)': 'OHM-CM',     #Resistance
+                    'g/cm3)' : 'G/CM3',  #//water density
+                    
                     'Celcius': pq.degC,
                     'Celsius': pq.degC,
                     'deg_F': pq.degF,
@@ -76,7 +95,7 @@ class AquatrollDataset(sonde.BaseSondeDataset):
                     'm': sq.mH2O,
                     'Metres': sq.mH2O,
                     'ppm': sq.mgl,
-                    'psu': sq.psu,
+                    'PSU)': sq.psu,
                     'us/cm': sq.uScm,
                     'uS/cm': sq.uScm,
                     'volts': pq.volt,
@@ -85,8 +104,8 @@ class AquatrollDataset(sonde.BaseSondeDataset):
                     'xb5S': sq.uScm,
                     'p':sq.mgl, # dbl check.. 
                     '': pq.dimensionless,
-#                     'ohm-cm':      #adding to master param list
-#                     'kg/m3' //water density
+                    'ohm-cm': 'OHM-CM'     #Resistance
+#                     'kg/m3' : '' #water density
 #                    water resistivity
                 
                     }
